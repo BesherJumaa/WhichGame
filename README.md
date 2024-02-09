@@ -12,7 +12,7 @@ Launch the app.
 Choose your preferred game options from the list or add custom options.
 Tap the "Go" button to let the app randomly select a game for you.
 Start playing and have fun!
-Why Choose Game Chooser App?
+Why Choose Which Game App?
 Eliminate Decision Paralysis: Say goodbye to indecision and spend more time gaming.
 Perfect for Groups: Ideal for gatherings with friends or family when choosing a game becomes a challenge.
 Customizable Options: Tailor the app to your specific gaming preferences with customizable options.
