@@ -45,7 +45,7 @@ class _DicePageState extends State<DicePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor.secondColor,
-        child: Lottie.asset(AppLinks.start),
+        child: Lottie.asset(AppLinks.floating),
         onPressed: () {
           Navigator.of(context).push(SlideRight(Page: Lot()));
         },

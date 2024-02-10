@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:whichgame/animationroute.dart';
 import 'package:whichgame/my_drawer.dart';
@@ -54,6 +56,8 @@ class _LotState extends State<Lot> {
     notes.clear();
     controllers.forEach((controller) {
       notes.add(controller.text);
+      buttonColor =
+          Color(0xFF000000 + Random().nextInt(0xFFFFFF)).withOpacity(1.0);
     });
   }
 
@@ -134,26 +138,42 @@ class _LotState extends State<Lot> {
                 );
               }),
 
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      updateNotes();
-                      buttonColor =
-                          Color(0xFF000000 + Random().nextInt(0xFFFFFF))
-                              .withOpacity(1.0);
-                    });
-                  },
-                  child: Text('Result'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryColor,
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 200,
+                    width: 200,
+                    child: InkWell(
+                      focusColor: AppColor.black,
+                      hoverColor: AppColor.black,
+                      splashColor: AppColor.black,
+                      highlightColor: AppColor.black,
+                      onTap: () {
+                        setState(() {
+                          updateNotes();
+                        });
+                      },
+                      child: Lottie.asset(
+                        AppLinks.button,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    top: 80,
+                    child: Text(
+                      'Result',
+                      style: TextStyle(
+                        color: AppColor.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 20,
-              ),
+
               // Display result based on notes list
               AnimatedContainer(
                 decoration: BoxDecoration(

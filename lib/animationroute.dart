@@ -76,4 +76,6 @@ class AppLinks {
   static const game = "asset/game.json";
   static const start = "asset/start.json";
   static const play = "asset/play.json";
+  static const button = "asset/button.json";
+  static const floating = "asset/floating.json";
 }
