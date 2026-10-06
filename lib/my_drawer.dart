@@ -1,102 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:whichgame/animationroute.dart';
+
+import 'animationroute.dart';
 
 class MyDrawer extends StatefulWidget {
+  const MyDrawer({required this.notes, super.key});
+
   final List<String> notes;
 
-  MyDrawer({required this.notes});
-
   @override
-  _MyDrawerState createState() => _MyDrawerState(notes: notes);
+  State<MyDrawer> createState() => _MyDrawerState();
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  String selectedTeams = '2 Teams';
-  final List<String> notes;
-
-  _MyDrawerState({required this.notes});
+  int _selectedTeamCount = 2;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColor.black,
       child: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 60),
+              margin: const EdgeInsets.only(top: 60),
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    notes.shuffle();
-                  });
-                },
-                child: Text("Split Teams"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primaryColor,
                 ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              child: DropdownButton(
-                dropdownColor: AppColor.primaryColor,
-                hint: Text("Choose Teams Number"),
-                items: ["2 Teams", "3 Teams", "4 Teams"]
-                    .map((e) => DropdownMenuItem(
-                          child: Text("$e"),
-                          value: e,
-                        ))
-                    .toList(),
-                onChanged: (String? val) {
-                  setState(() {
-                    selectedTeams = val!;
-                  });
+                onPressed: () {
+                  setState(() => widget.notes.shuffle());
                 },
-                value: selectedTeams,
+                child: const Text('Split Teams'),
               ),
             ),
-            if (notes.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: DropdownButton<int>(
+                dropdownColor: AppColor.primaryColor,
+                hint: const Text('Choose Teams Number'),
+                value: _selectedTeamCount,
+                items: const [2, 3, 4]
+                    .map(
+                      (count) => DropdownMenuItem<int>(
+                        value: count,
+                        child: Text('$count Teams'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  setState(() => _selectedTeamCount = value);
+                },
+              ),
+            ),
+            if (widget.notes.isNotEmpty)
               ...List.generate(
-                int.parse(selectedTeams.split(' ')[0]),
-                (index) => Column(
+                _selectedTeamCount,
+                (teamIndex) => Column(
                   children: [
                     Container(
-                      margin: EdgeInsets.only(top: 5),
-                      padding: EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(top: 5),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          color: AppColor.primaryColor,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Text("Team ${index + 1} :"),
+                        color: AppColor.primaryColor,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text('Team ${teamIndex + 1} :'),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: (notes.length /
-                              int.parse(selectedTeams.split(' ')[0]))
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: (widget.notes.length / _selectedTeamCount)
                           .ceil(),
-                      itemBuilder: (context, i) {
-                        int playerIndex = index *
-                                ((notes.length /
-                                        int.parse(selectedTeams.split(' ')[0]))
-                                    .ceil()) +
-                            i;
-                        if (playerIndex >= notes.length) {
-                          return SizedBox();
+                      itemBuilder: (context, itemIndex) {
+                        final itemsPerTeam =
+                            (widget.notes.length / _selectedTeamCount).ceil();
+                        final playerIndex =
+                            teamIndex * itemsPerTeam + itemIndex;
+
+                        if (playerIndex >= widget.notes.length) {
+                          return const SizedBox.shrink();
                         }
+
                         return Container(
-                          margin: EdgeInsets.only(top: 5),
-                          padding: EdgeInsets.all(5),
+                          margin: const EdgeInsets.only(top: 5),
+                          padding: const EdgeInsets.all(5),
                           color: AppColor.primaryColor,
                           child: Row(
                             children: [
-                              Lottie.asset(AppLinks.game,
-                                  height: 35, width: 50),
-                              SizedBox(width: 15),
+                              Lottie.asset(
+                                AppLinks.game,
+                                height: 35,
+                                width: 50,
+                              ),
+                              const SizedBox(width: 15),
                               Text(
-                                "${notes[playerIndex]}",
-                                style: TextStyle(
+                                widget.notes[playerIndex],
+                                style: const TextStyle(
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),

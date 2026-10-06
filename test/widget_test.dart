@@ -1,6 +1,15 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+import 'package:flutter_test/flutter_test.dart';
+import 'package:whichgame/main.dart';
+
+void main() {
+  testWidgets('shows the main game chooser', (tester) async {
+    await tester.pumpWidget(const WhichGameApp());
+    await tester.pump();
+
+    expect(find.text('Which game i have to play ? '), findsOneWidget);
+    expect(
+      find.text('Turn on to choose between CS & General & BattleField'),
+      findsOneWidget,
+    );
+  });
+}
