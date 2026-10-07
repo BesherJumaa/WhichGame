@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
+import 'package:whichgame/core/widgets/app_bottom_sheet_safe_area.dart';
 import 'package:whichgame/domain/models/player_profile.dart';
 
 class PlayerEditorResult {
@@ -18,7 +19,9 @@ Future<PlayerEditorResult?> showPlayerEditorSheet(
     showDragHandle: true,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) => _PlayerEditorSheet(player: player),
+    builder: (context) => AppBottomSheetSafeArea(
+      child: _PlayerEditorSheet(player: player),
+    ),
   );
 }
 

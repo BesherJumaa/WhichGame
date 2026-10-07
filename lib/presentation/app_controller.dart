@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+
 import 'package:flutter/foundation.dart';
+import 'package:whichgame/core/constants/app_images.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
 import 'package:whichgame/core/localization/app_language.dart';
 import 'package:whichgame/data/catalog/game_catalog.dart';
 import 'package:whichgame/data/local/app_storage.dart';
+import 'package:whichgame/data/local/game_image_storage.dart';
+import 'package:whichgame/domain/models/custom_choice.dart';
 import 'package:whichgame/domain/models/game.dart';
 import 'package:whichgame/domain/models/game_filter.dart';
 import 'package:whichgame/domain/models/player_profile.dart';
@@ -18,11 +22,13 @@ class AppController extends ChangeNotifier {
     required AppStorage storage,
     TeamGenerator teamGenerator = const TeamGenerator(),
     GeneralsPickerService? generalsPickerService,
+    GameImageStorage? gameImageStorage,
   }) {
     return AppController._(
       storage,
       teamGenerator,
       generalsPickerService ?? GeneralsPickerService(),
+      gameImageStorage ?? GameImageStorage(),
     );
   }
 
@@ -30,11 +36,13 @@ class AppController extends ChangeNotifier {
     this._storage,
     this._teamGenerator,
     this._generalsPickerService,
+    this._gameImageStorage,
   );
 
   final AppStorage _storage;
   final TeamGenerator _teamGenerator;
   final GeneralsPickerService _generalsPickerService;
+  final GameImageStorage _gameImageStorage;
   final Random _random = Random();
 
   List<Game> games = const [];
@@ -45,6 +53,11 @@ class AppController extends ChangeNotifier {
   final Set<String> _selectedGameIds = {};
   final Set<String> _archivedGameIds = {};
   final List<String> _recentGameIds = [];
+  final List<CustomChoice> _customChoices = [];
+  final List<Game> _customGames = [];
+  final List<Game> _gameOverrides = [];
+  final Set<String> _deletedGameIds = {};
+  String? _lastCustomChoiceId;
 
   GameFilterState _gameFilters = const GameFilterState();
   Game? _lastPickedGame;
@@ -77,6 +90,10 @@ class AppController extends ChangeNotifier {
   Game? get lastPickedGame => _lastPickedGame;
   AppLanguage get language => _language;
   bool get shouldShowCoachTour => !_coachTourCompleted;
+  List<CustomChoice> get customChoices => List.unmodifiable(_customChoices);
+  List<CustomChoice> get enabledCustomChoices => List.unmodifiable(
+        _customChoices.where((choice) => choice.enabled),
+      );
 
   List<PlayerProfile> get activePlayers => allPlayers
       .where((player) => _activePlayerIds.contains(player.id))
@@ -114,7 +131,6 @@ class AppController extends ChangeNotifier {
     _language = await _storage.loadLanguage();
     _coachTourCompleted = await _storage.loadCoachTourCompleted();
     AppStrings.setLanguage(_language);
-    games = GameCatalog.buildGames();
 
     final results = await Future.wait<dynamic>([
       _storage.loadPlayers(),
@@ -124,7 +140,22 @@ class AppController extends ChangeNotifier {
       _storage.loadRecentGameIds(),
       _storage.loadArchivedGameIds(),
       _storage.loadArchivedPlayerIds(),
+      _storage.loadCustomChoices(),
+      _storage.loadCustomGames(),
+      _storage.loadGameOverrides(),
+      _storage.loadDeletedGameIds(),
     ]);
+
+    _customGames
+      ..clear()
+      ..addAll(results[8] as List<Game>);
+    _gameOverrides
+      ..clear()
+      ..addAll(results[9] as List<Game>);
+    _deletedGameIds
+      ..clear()
+      ..addAll((results[10] as Set<String>).map(_migrateGameId));
+    _rebuildGames();
 
     _permanentPlayers
       ..clear()
@@ -146,15 +177,15 @@ class AppController extends ChangeNotifier {
         ),
       );
 
-    final catalogIds = games.map((game) => game.id).toSet();
+    final availableGameIds = games.map((game) => game.id).toSet();
     final storedGameIds = (results[2] as Set<String>?)?.map(_migrateGameId).toSet();
 
     final storedArchivedGames = results[5] as Set<String>?;
     final initialArchivedGames = storedArchivedGames == null
-        ? catalogIds.difference(GameCatalog.defaultBoardGameIds)
+        ? availableGameIds.difference(GameCatalog.defaultBoardGameIds)
         : storedArchivedGames
             .map(_migrateGameId)
-            .where(catalogIds.contains)
+            .where(availableGameIds.contains)
             .toSet();
 
     _archivedGameIds
@@ -165,8 +196,8 @@ class AppController extends ChangeNotifier {
       ..clear()
       ..addAll(
         storedGameIds == null
-            ? GameCatalog.defaultBoardGameIds.where(catalogIds.contains)
-            : storedGameIds.where(catalogIds.contains),
+            ? GameCatalog.defaultBoardGameIds.where(availableGameIds.contains)
+            : storedGameIds.where(availableGameIds.contains),
       )
       ..removeAll(_archivedGameIds);
 
@@ -177,12 +208,16 @@ class AppController extends ChangeNotifier {
       ..addAll(
         (results[4] as List<String>)
             .map(_migrateGameId)
-            .where(catalogIds.contains)
+            .where(availableGameIds.contains)
             .take(5),
       );
 
-    // Persist the new small starter board once so subsequent launches keep the
-    // user's exact archive state, including a deliberately empty archive.
+    _customChoices
+      ..clear()
+      ..addAll(results[7] as List<CustomChoice>);
+
+    // Persist the starter board only once. After that the user's exact board,
+    // custom games, edits, deletes, and archive state are retained.
     if (storedArchivedGames == null) {
       await Future.wait([
         _storage.saveArchivedGameIds(_archivedGameIds),
@@ -206,7 +241,7 @@ class AppController extends ChangeNotifier {
 
     _language = language;
     AppStrings.setLanguage(language);
-    games = GameCatalog.buildGames();
+    _rebuildGames();
     _lastPickedGame = _lastPickedGame == null ? null : _gameById(_lastPickedGame!.id);
     notifyListeners();
     await _storage.saveLanguage(language);
@@ -243,6 +278,195 @@ class AppController extends ChangeNotifier {
 
   bool isGameSelected(String gameId) => _selectedGameIds.contains(gameId);
   bool isGameArchived(String gameId) => _archivedGameIds.contains(gameId);
+
+  Future<Game> addGame({
+    required String title,
+    required String description,
+    required GameCategory category,
+    required int minPlayers,
+    required int? maxPlayers,
+    required Set<GameMode> modes,
+    Uint8List? imageBytes,
+    String? imageFileName,
+  }) async {
+    final id =
+        'custom_game_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(10000)}';
+    String? customImagePath;
+
+    if (imageBytes != null && imageFileName != null) {
+      customImagePath = await _gameImageStorage.saveImage(
+        gameId: id,
+        bytes: imageBytes,
+        originalFileName: imageFileName,
+      );
+    }
+
+    final game = Game(
+      id: id,
+      title: title.trim(),
+      description: description.trim(),
+      category: category,
+      minPlayers: minPlayers,
+      maxPlayers: maxPlayers,
+      modes: Set.unmodifiable(modes),
+      assetPath: AppImages.appIcon,
+      customImagePath: customImagePath,
+      isCustom: true,
+    );
+
+    _customGames.add(game);
+    _deletedGameIds.remove(game.id);
+    _archivedGameIds.remove(game.id);
+    _selectedGameIds.add(game.id);
+    _rebuildGames();
+    notifyListeners();
+
+    try {
+      await Future.wait([
+        _storage.saveCustomGames(_customGames),
+        _storage.saveDeletedGameIds(_deletedGameIds),
+        _storage.saveArchivedGameIds(_archivedGameIds),
+        _storage.saveSelectedGameIds(_selectedGameIds),
+      ]);
+    } catch (_) {
+      _customGames.removeWhere((item) => item.id == game.id);
+      _selectedGameIds.remove(game.id);
+      _archivedGameIds.remove(game.id);
+      _rebuildGames();
+      notifyListeners();
+      await _gameImageStorage.deleteImage(customImagePath);
+      rethrow;
+    }
+    return game;
+  }
+
+  Future<void> updateGame({
+    required Game game,
+    required String title,
+    required String description,
+    required GameCategory category,
+    required int minPlayers,
+    required int? maxPlayers,
+    required Set<GameMode> modes,
+    Uint8List? imageBytes,
+    String? imageFileName,
+    bool removeCustomImage = false,
+  }) async {
+    final previousImagePath = game.customImagePath;
+    String? nextImagePath = previousImagePath;
+    var savedNewImage = false;
+
+    if (imageBytes != null && imageFileName != null) {
+      nextImagePath = await _gameImageStorage.saveImage(
+        gameId: game.id,
+        bytes: imageBytes,
+        originalFileName: imageFileName,
+      );
+      savedNewImage = true;
+    } else if (removeCustomImage) {
+      nextImagePath = null;
+    }
+
+    final updated = game.copyWith(
+      title: title.trim(),
+      description: description.trim(),
+      category: category,
+      minPlayers: minPlayers,
+      maxPlayers: maxPlayers,
+      clearMaxPlayers: maxPlayers == null,
+      modes: Set.unmodifiable(modes),
+      customImagePath: nextImagePath,
+      clearCustomImagePath: nextImagePath == null,
+    );
+
+    Game? previousStoredGame;
+    var addedOverride = false;
+
+    try {
+      if (game.isCustom) {
+        final index = _customGames.indexWhere((item) => item.id == game.id);
+        if (index == -1) {
+          if (savedNewImage) {
+            await _gameImageStorage.deleteImage(nextImagePath);
+          }
+          return;
+        }
+        previousStoredGame = _customGames[index];
+        _customGames[index] = updated.copyWith(isCustom: true);
+        await _storage.saveCustomGames(_customGames);
+      } else {
+        final index = _gameOverrides.indexWhere((item) => item.id == game.id);
+        if (index == -1) {
+          _gameOverrides.add(updated.copyWith(isCustom: false));
+          addedOverride = true;
+        } else {
+          previousStoredGame = _gameOverrides[index];
+          _gameOverrides[index] = updated.copyWith(isCustom: false);
+        }
+        await _storage.saveGameOverrides(_gameOverrides);
+      }
+    } catch (_) {
+      if (game.isCustom && previousStoredGame != null) {
+        final index = _customGames.indexWhere((item) => item.id == game.id);
+        if (index != -1) {
+          _customGames[index] = previousStoredGame;
+        }
+      } else if (!game.isCustom) {
+        if (addedOverride) {
+          _gameOverrides.removeWhere((item) => item.id == game.id);
+        } else if (previousStoredGame != null) {
+          final index = _gameOverrides.indexWhere((item) => item.id == game.id);
+          if (index != -1) {
+            _gameOverrides[index] = previousStoredGame;
+          }
+        }
+      }
+      if (savedNewImage) {
+        await _gameImageStorage.deleteImage(nextImagePath);
+      }
+      rethrow;
+    }
+
+    if (previousImagePath != null && previousImagePath != nextImagePath) {
+      await _gameImageStorage.deleteImage(previousImagePath);
+    }
+
+    _rebuildGames();
+    if (_lastPickedGame?.id == game.id) {
+      _lastPickedGame = _gameById(game.id);
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteGame(Game game) async {
+    final customImagePath = game.customImagePath;
+
+    if (game.isCustom) {
+      _customGames.removeWhere((item) => item.id == game.id);
+    } else {
+      _deletedGameIds.add(game.id);
+      _gameOverrides.removeWhere((item) => item.id == game.id);
+    }
+
+    _selectedGameIds.remove(game.id);
+    _archivedGameIds.remove(game.id);
+    _recentGameIds.remove(game.id);
+    if (_lastPickedGame?.id == game.id) {
+      _lastPickedGame = null;
+    }
+    _rebuildGames();
+    notifyListeners();
+
+    await Future.wait([
+      _storage.saveCustomGames(_customGames),
+      _storage.saveGameOverrides(_gameOverrides),
+      _storage.saveDeletedGameIds(_deletedGameIds),
+      _storage.saveSelectedGameIds(_selectedGameIds),
+      _storage.saveArchivedGameIds(_archivedGameIds),
+      _storage.saveRecentGameIds(_recentGameIds),
+    ]);
+    await _gameImageStorage.deleteImage(customImagePath);
+  }
 
   Future<void> toggleGame(String gameId) async {
     if (!_selectedGameIds.remove(gameId)) {
@@ -415,6 +639,92 @@ class AppController extends ChangeNotifier {
     return picked;
   }
 
+  Future<void> addCustomChoice(String label) async {
+    final normalized = label.trim();
+    if (normalized.isEmpty) {
+      return;
+    }
+
+    _customChoices.add(
+      CustomChoice(
+        id: 'choice_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(10000)}',
+        label: normalized,
+      ),
+    );
+    notifyListeners();
+    await _storage.saveCustomChoices(_customChoices);
+  }
+
+  Future<void> updateCustomChoice(String id, String label) async {
+    final normalized = label.trim();
+    if (normalized.isEmpty) {
+      return;
+    }
+
+    final index = _customChoices.indexWhere((choice) => choice.id == id);
+    if (index == -1) {
+      return;
+    }
+
+    _customChoices[index] = _customChoices[index].copyWith(label: normalized);
+    notifyListeners();
+    await _storage.saveCustomChoices(_customChoices);
+  }
+
+  Future<void> deleteCustomChoice(String id) async {
+    final exists = _customChoices.any((choice) => choice.id == id);
+    if (!exists) {
+      return;
+    }
+    _customChoices.removeWhere((choice) => choice.id == id);
+    if (_lastCustomChoiceId == id) {
+      _lastCustomChoiceId = null;
+    }
+    notifyListeners();
+    await _storage.saveCustomChoices(_customChoices);
+  }
+
+  Future<void> toggleCustomChoice(String id) async {
+    final index = _customChoices.indexWhere((choice) => choice.id == id);
+    if (index == -1) {
+      return;
+    }
+
+    final choice = _customChoices[index];
+    _customChoices[index] = choice.copyWith(enabled: !choice.enabled);
+    notifyListeners();
+    await _storage.saveCustomChoices(_customChoices);
+  }
+
+  Future<void> setAllCustomChoicesEnabled(bool enabled) async {
+    if (_customChoices.isEmpty) {
+      return;
+    }
+
+    for (var index = 0; index < _customChoices.length; index++) {
+      _customChoices[index] = _customChoices[index].copyWith(enabled: enabled);
+    }
+    notifyListeners();
+    await _storage.saveCustomChoices(_customChoices);
+  }
+
+  CustomChoice? pickRandomCustomChoice() {
+    final pool = enabledCustomChoices;
+    if (pool.isEmpty) {
+      return null;
+    }
+
+    var picked = pool[_random.nextInt(pool.length)];
+    if (pool.length > 1 && picked.id == _lastCustomChoiceId) {
+      final alternatives = pool
+          .where((choice) => choice.id != _lastCustomChoiceId)
+          .toList(growable: false);
+      picked = alternatives[_random.nextInt(alternatives.length)];
+    }
+    _lastCustomChoiceId = picked.id;
+    return picked;
+  }
+
   Future<void> addPlayer({required String name, required bool permanent}) async {
     final normalized = name.trim();
     if (normalized.isEmpty) {
@@ -561,6 +871,32 @@ class AppController extends ChangeNotifier {
 
   List<GeneralsAssignment> generateGeneralsAssignments() {
     return _generalsPickerService.assign(activePlayers);
+  }
+
+  void _rebuildGames() {
+    final overridesById = {
+      for (final game in _gameOverrides) game.id: game,
+    };
+    final merged = <Game>[];
+
+    for (final catalogGame in GameCatalog.buildGames()) {
+      if (_deletedGameIds.contains(catalogGame.id)) {
+        continue;
+      }
+      merged.add(overridesById[catalogGame.id] ?? catalogGame);
+    }
+
+    final existingIds = merged.map((game) => game.id).toSet();
+    for (final customGame in _customGames) {
+      if (_deletedGameIds.contains(customGame.id) ||
+          existingIds.contains(customGame.id)) {
+        continue;
+      }
+      merged.add(customGame.copyWith(isCustom: true));
+      existingIds.add(customGame.id);
+    }
+
+    games = List.unmodifiable(merged);
   }
 
   Set<String> _permanentActiveIds() {

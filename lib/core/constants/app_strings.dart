@@ -44,8 +44,8 @@ abstract final class AppStrings {
 
   static String get coachWelcomeTitle => _t('Welcome to Which Game?', 'أهلاً بك في أي لعبة؟');
   static String get coachWelcomeDescription => _t(
-        'A quick tour will show you the random picker, your personal game board, saved players, team tools, Generals armies, archives, and language controls.',
-        'جولة سريعة ستعرّفك على الاختيار العشوائي، لوحة ألعابك، اللاعبين المحفوظين، تقسيم الفرق، جيوش جنرالز، الأرشيف، وتغيير اللغة.',
+        'A quick tour will show you the game picker, your custom picker, personal game board, saved players, team tools, Generals armies, archives, and language controls.',
+        'جولة سريعة ستعرّفك على اختيار الألعاب، الاختيار المخصص، لوحة ألعابك، اللاعبين المحفوظين، تقسيم الفرق، جيوش جنرالز، الأرشيف، وتغيير اللغة.',
       );
   static String get coachPlayTitle => _t('Pick a game instantly', 'اختر لعبة فوراً');
   static String get coachPlayDescription => _t(
@@ -54,8 +54,8 @@ abstract final class AppStrings {
       );
   static String get coachQuickActionsTitle => _t('Your fastest shortcuts', 'أسرع اختصاراتك');
   static String get coachQuickActionsDescription => _t(
-        'Jump straight to managing games, splitting teams, or assigning Generals armies to all active players.',
-        'انتقل مباشرة لإدارة الألعاب أو تقسيم الفرق أو توزيع جيوش جنرالز على جميع اللاعبين النشطين.',
+        'Jump straight to managing games, splitting teams, assigning Generals armies, or using your own custom picker.',
+        'انتقل مباشرة لإدارة الألعاب أو تقسيم الفرق أو توزيع جيوش جنرالز أو استخدام الاختيار المخصص الخاص بك.',
       );
   static String get coachGameFiltersTitle => _t('Keep the library compact', 'حافظ على المكتبة مرتبة');
   static String get coachGameFiltersDescription => _t(
@@ -64,8 +64,8 @@ abstract final class AppStrings {
       );
   static String get coachGameBoardTitle => _t('Enable only what you play', 'فعّل ما تلعبه فقط');
   static String get coachGameBoardDescription => _t(
-        'Tap a game to enable or disable it. The menu also gives you details and “Only this game” when you want one instant choice.',
-        'اضغط على اللعبة لتفعيلها أو تعطيلها. ومن القائمة يمكنك مشاهدة التفاصيل أو اختيار «هذه اللعبة فقط» لتعطيل البقية بسرعة.',
+        'Tap a game to enable or disable it. Use + to add your own games, and the game menu to view details, edit, remove, archive, or keep only that game enabled.',
+        'اضغط على اللعبة لتفعيلها أو تعطيلها. استخدم + لإضافة ألعابك، ومن قائمة اللعبة يمكنك عرض التفاصيل أو التعديل أو الحذف أو الأرشفة أو إبقاء هذه اللعبة وحدها مفعّلة.',
       );
   static String get coachGameArchiveTitle => _t('Archive the rest', 'أرشف الباقي');
   static String get coachGameArchiveDescription => _t(
@@ -178,6 +178,35 @@ abstract final class AppStrings {
   static String get noRecentPicks => _t('Your recent picks will appear here.', 'ستظهر اختياراتك الأخيرة هنا.');
   static String get chooseGamePool => _t('Choose game pool', 'اختيار قائمة الألعاب');
   static String get splitTeams => _t('Split teams', 'تقسيم الفرق');
+  static String get customPicker => _t('Custom picker', 'اختيار مخصص');
+  static String get customPickerShort => _t('Custom', 'خياراتي');
+  static String get customPickerDescription => _t(
+        'Add any choices you want, keep them saved, then let the app pick one for you.',
+        'أضف أي خيارات تريدها واحفظها، ثم دع التطبيق يختار واحداً منها عشوائياً.',
+      );
+  static String get customPickerResult => _t('Your pick', 'اختيارك');
+  static String get addCustomOption => _t('Add option', 'إضافة خيار');
+  static String get customOptionHint => _t('Write an option…', 'اكتب خياراً…');
+  static String get editCustomOption => _t('Edit option', 'تعديل الخيار');
+  static String get customOptions => _t('Options', 'الخيارات');
+  static String get enabledOptions => _t('Enabled options', 'الخيارات المفعّلة');
+  static String get enableAllOptions => _t('Enable all', 'تفعيل الكل');
+  static String get disableAllOptions => _t('Disable all', 'تعطيل الكل');
+  static String get pickCustomOption => _t('Pick one', 'اختر واحداً');
+  static String get pickCustomAgain => _t('Pick again', 'اختر من جديد');
+  static String get choosingCustomOption => _t('Choosing…', 'جاري الاختيار…');
+  static String get noCustomOptions => _t(
+        'Add your first option to start.',
+        'أضف أول خيار للبدء.',
+      );
+  static String get customPickerNeedsOptions => _t(
+        'Enable at least two options first.',
+        'فعّل خيارين على الأقل أولاً.',
+      );
+  static String get customPickerSavedHint => _t(
+        'Your options are saved on this device for next time.',
+        'خياراتك محفوظة على هذا الجهاز للمرة القادمة.',
+      );
   static String get pickGame => _t('Pick a game', 'اختر لعبة');
   static String get pickAgain => _t('Pick again', 'اختر من جديد');
   static String get emptyHeroTitle => _t('What are we playing?', 'ماذا سنلعب؟');
@@ -231,6 +260,57 @@ abstract final class AppStrings {
 
   static String get add => _t('Add', 'إضافة');
   static String get addPlayer => _t('Add player', 'إضافة لاعب');
+  static String get addGame => _t('Add game', 'إضافة لعبة');
+  static String get editGame => _t('Edit game', 'تعديل اللعبة');
+  static String get removeGame => _t('Remove game', 'حذف اللعبة');
+  static String get saveGame => _t('Save game', 'حفظ اللعبة');
+  static String get gameName => _t('Game name', 'اسم اللعبة');
+  static String get gameNameHint => _t('e.g. Rocket League', 'مثلاً: Rocket League');
+  static String get gameDescription => _t('Description', 'الوصف');
+  static String get gameDescriptionHint => _t('Short optional description', 'وصف مختصر اختياري');
+  static String get minimumPlayers => _t('Minimum players', 'أقل عدد لاعبين');
+  static String get maximumPlayers => _t('Maximum players', 'أكبر عدد لاعبين');
+  static String get noMaximum => _t('No maximum', 'بدون حد أعلى');
+  static String get gameModes => _t('Play modes', 'أنماط اللعب');
+  static String get customGame => _t('Custom', 'مخصصة');
+  static String get gameSavedLocally => _t(
+        'Saved locally on this device.',
+        'تم الحفظ محلياً على هذا الجهاز.',
+      );
+  static String get gameImage => _t('Game image', 'صورة اللعبة');
+  static String get gameImageHint => _t(
+        'Optional. The selected image is copied into app storage and kept for next time.',
+        'اختيارية. تُنسخ الصورة إلى تخزين التطبيق وتبقى محفوظة للمرة القادمة.',
+      );
+  static String get chooseGameImage => _t('Choose image', 'اختر صورة');
+  static String get changeGameImage => _t('Change image', 'تغيير الصورة');
+  static String get removeGameImage => _t('Remove image', 'حذف الصورة');
+  static String get gameImageTooLarge => _t(
+        'Choose an image smaller than 12 MB.',
+        'اختر صورة بحجم أقل من 12 ميغابايت.',
+      );
+  static String get gameImageReadFailed => _t(
+        'Could not read this image. Try another JPG, PNG, or WebP file.',
+        'تعذر قراءة هذه الصورة. جرّب ملف JPG أو PNG أو WebP آخر.',
+      );
+  static String get gameSaveFailed => _t(
+        'Could not save the game. Please try again.',
+        'تعذر حفظ اللعبة. حاول مرة أخرى.',
+      );
+  static String get chooseGameMode => _t(
+        'Choose at least one play mode.',
+        'اختر نمط لعب واحداً على الأقل.',
+      );
+  static String get invalidPlayerRange => _t(
+        'Maximum players must be greater than or equal to minimum players.',
+        'يجب أن يكون الحد الأعلى للاعبين أكبر من أو يساوي الحد الأدنى.',
+      );
+  static String removeGameTitle(String name) =>
+      isArabic ? 'حذف $name؟' : 'Remove $name?';
+  static String get removeGameWarning => _t(
+        'This removes the game from this device. You can archive a game instead if you only want to hide it temporarily.',
+        'سيتم حذف اللعبة من هذا الجهاز. إذا كنت تريد إخفاءها مؤقتاً فقط فاستخدم الأرشفة بدلاً من الحذف.',
+      );
   static String get editPlayer => _t('Edit player', 'تعديل اللاعب');
   static String get delete => _t('Delete', 'حذف');
   static String get edit => _t('Edit', 'تعديل');
@@ -420,6 +500,10 @@ abstract final class AppStrings {
 
   static String deletePlayerTitle(String name) =>
       isArabic ? 'حذف $name؟' : 'Delete $name?';
+
+  static String customOptionsEnabled(int enabled, int total) => isArabic
+      ? '$enabled من $total مفعّل'
+      : '$enabled of $total enabled';
 
   static String selectedPlayers(int count) => isArabic
       ? '$count لاعب محدد. الضيوف يعملون مثل اللاعبين المحفوظين خلال هذه الجلسة.'

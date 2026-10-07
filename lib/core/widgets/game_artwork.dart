@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:whichgame/core/theme/app_colors.dart';
 import 'package:whichgame/domain/models/game.dart';
@@ -30,17 +32,44 @@ class GameArtwork extends StatelessWidget {
       child: SizedBox(
         width: _width,
         height: _height,
-        child: Image.asset(
-          game.assetPath,
-          fit: fit,
-          filterQuality: FilterQuality.medium,
-          errorBuilder: (context, error, stackTrace) => _Fallback(
-            game: game,
-            width: _width,
-            height: _height,
-            borderRadius: borderRadius,
-          ),
-        ),
+        child: _buildImage(context),
+      ),
+    );
+  }
+
+  Widget _buildImage(BuildContext context) {
+    final customImagePath = game.customImagePath?.trim();
+    if (customImagePath != null && customImagePath.isNotEmpty) {
+      return Image.file(
+        File(customImagePath),
+        fit: fit,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: (context, error, stackTrace) => _buildBundledImage(context),
+      );
+    }
+
+    return _buildBundledImage(context);
+  }
+
+  Widget _buildBundledImage(BuildContext context) {
+    if (game.isCustom || game.assetPath.trim().isEmpty) {
+      return _Fallback(
+        game: game,
+        width: _width,
+        height: _height,
+        borderRadius: borderRadius,
+      );
+    }
+
+    return Image.asset(
+      game.assetPath,
+      fit: fit,
+      filterQuality: FilterQuality.medium,
+      errorBuilder: (context, error, stackTrace) => _Fallback(
+        game: game,
+        width: _width,
+        height: _height,
+        borderRadius: borderRadius,
       ),
     );
   }
@@ -64,7 +93,7 @@ class _Fallback extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final icon = switch (game.category) {
       GameCategory.card => Icons.style_rounded,
-      GameCategory.sport => Icons.sports_esports_rounded,
+      GameCategory.sport => Icons.sports_soccer_rounded,
       GameCategory.video => Icons.sports_esports_rounded,
     };
 

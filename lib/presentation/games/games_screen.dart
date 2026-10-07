@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
+import 'package:whichgame/core/widgets/app_bottom_sheet_safe_area.dart';
 import 'package:whichgame/core/widgets/app_page.dart';
 import 'package:whichgame/core/widgets/game_artwork.dart';
 import 'package:whichgame/core/widgets/language_button.dart';
@@ -7,6 +8,7 @@ import 'package:whichgame/domain/models/game.dart';
 import 'package:whichgame/domain/models/game_filter.dart';
 import 'package:whichgame/presentation/app_controller.dart';
 import 'package:whichgame/presentation/app_scope.dart';
+import 'package:whichgame/presentation/games/game_editor_sheet.dart';
 import 'package:whichgame/presentation/games/widgets/game_card.dart';
 
 class GamesScreen extends StatefulWidget {
@@ -49,6 +51,11 @@ class _GamesScreenState extends State<GamesScreen> {
           AppBar(
             title: Text(AppStrings.gameLibrary),
             actions: [
+              IconButton(
+                tooltip: AppStrings.addGame,
+                onPressed: () => _showGameEditor(context),
+                icon: const Icon(Icons.add_circle_outline_rounded),
+              ),
               IconButton(
                 key: widget.coachArchiveKey,
                 tooltip: AppStrings.manageGameBoard,
@@ -280,11 +287,17 @@ class _GamesScreenState extends State<GamesScreen> {
       case GameCardAction.details:
         await _showGameDetails(context, game);
         break;
+      case GameCardAction.edit:
+        await _showGameEditor(context, game: game);
+        break;
       case GameCardAction.onlyThis:
         await controller.selectOnlyGame(game.id);
         break;
       case GameCardAction.archive:
         await controller.archiveGame(game.id);
+        break;
+      case GameCardAction.remove:
+        await _confirmRemoveGame(context, game);
         break;
     }
   }
@@ -322,13 +335,53 @@ class _GamesScreenState extends State<GamesScreen> {
     if (mounted) setState(() {});
   }
 
+  Future<void> _showGameEditor(BuildContext context, {Game? game}) {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      builder: (_) => AppBottomSheetSafeArea(
+        child: GameEditorSheet(game: game),
+      ),
+    );
+  }
+
+  Future<void> _confirmRemoveGame(BuildContext context, Game game) async {
+    final controller = AppScope.of(context);
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(AppStrings.removeGameTitle(game.title)),
+            content: Text(AppStrings.removeGameWarning),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(AppStrings.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(AppStrings.removeGame),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (confirmed) {
+      await controller.deleteGame(game);
+    }
+  }
+
   Future<void> _showGameDetails(BuildContext context, Game game) {
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       useSafeArea: true,
       isScrollControlled: true,
-      builder: (_) => _GameDetailsSheet(gameId: game.id),
+      builder: (_) => AppBottomSheetSafeArea(
+        child: _GameDetailsSheet(gameId: game.id),
+      ),
     );
   }
 
@@ -338,7 +391,9 @@ class _GamesScreenState extends State<GamesScreen> {
       showDragHandle: true,
       useSafeArea: true,
       isScrollControlled: true,
-      builder: (_) => const _ArchivedGamesSheet(initialIndex: 1),
+      builder: (_) => const AppBottomSheetSafeArea(
+        child: _ArchivedGamesSheet(initialIndex: 1),
+      ),
     );
   }
 }

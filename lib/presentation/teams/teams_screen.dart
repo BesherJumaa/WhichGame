@@ -188,7 +188,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
                   ),
                   const SizedBox(height: 20),
                   if (players.length < 2)
-                    _NeedPlayers()
+                    const _NeedPlayers()
                   else if (_teams.isEmpty)
                     Container(
                       padding: const EdgeInsets.all(22),
@@ -380,7 +380,7 @@ class _TeamCard extends StatelessWidget {
 }
 
 class _NeedPlayers extends StatelessWidget {
-  _NeedPlayers();
+  const _NeedPlayers();
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 name: whichgame
 description: Which Game? - a fast multiplayer game picker and team builder.
 publish_to: 'none'
-version: 0.2.0+1
+version: 0.2.1+1
 
 environment:
   sdk: '>=3.13.0 <4.0.0'
@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  google_fonts: ^9.0.0
+  image_picker: ^1.2.4
+  path_provider: ^2.1.6
   shared_preferences: ^2.5.6
 
 dev_dependencies:

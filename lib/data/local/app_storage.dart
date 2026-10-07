@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whichgame/core/localization/app_language.dart';
+import 'package:whichgame/domain/models/custom_choice.dart';
+import 'package:whichgame/domain/models/game.dart';
 import 'package:whichgame/domain/models/game_filter.dart';
 import 'package:whichgame/domain/models/player_profile.dart';
 
@@ -18,6 +20,10 @@ class AppStorage {
   static const _archivedPlayersKey = 'whichgame.archivedPlayers.v1';
   static const _languageKey = 'whichgame.language.v1';
   static const _coachTourCompletedKey = 'whichgame.coachTour.completed.v1';
+  static const _customChoicesKey = 'whichgame.customChoices.v1';
+  static const _customGamesKey = 'whichgame.customGames.v1';
+  static const _gameOverridesKey = 'whichgame.gameOverrides.v1';
+  static const _deletedGameIdsKey = 'whichgame.deletedGames.v1';
 
   final SharedPreferencesAsync _preferences;
 
@@ -92,6 +98,7 @@ class AppStorage {
   Future<void> saveRecentGameIds(List<String> ids) {
     return _preferences.setStringList(_recentGamesKey, ids);
   }
+
   Future<Set<String>?> loadArchivedGameIds() async {
     final values = await _preferences.getStringList(_archivedGamesKey);
     return values?.toSet();
@@ -100,7 +107,6 @@ class AppStorage {
   Future<void> saveArchivedGameIds(Set<String> ids) {
     return _preferences.setStringList(_archivedGamesKey, ids.toList()..sort());
   }
-
 
   Future<Set<String>> loadArchivedPlayerIds() async {
     final values = await _preferences.getStringList(_archivedPlayersKey);
@@ -120,6 +126,82 @@ class AppStorage {
 
   Future<void> saveLanguage(AppLanguage language) {
     return _preferences.setString(_languageKey, language.code);
+  }
+
+  Future<List<CustomChoice>> loadCustomChoices() async {
+    final raw = await _preferences.getString(_customChoicesKey);
+    if (raw == null || raw.isEmpty) {
+      return const [];
+    }
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List<dynamic>) {
+        return const [];
+      }
+      return decoded
+          .whereType<Map<String, dynamic>>()
+          .map(CustomChoice.fromJson)
+          .where((choice) => choice.id.isNotEmpty && choice.label.trim().isNotEmpty)
+          .toList(growable: false);
+    } on FormatException {
+      return const [];
+    }
+  }
+
+  Future<void> saveCustomChoices(List<CustomChoice> choices) {
+    final payload = jsonEncode(choices.map((choice) => choice.toJson()).toList());
+    return _preferences.setString(_customChoicesKey, payload);
+  }
+
+  Future<List<Game>> loadCustomGames() => _loadGames(_customGamesKey);
+
+  Future<void> saveCustomGames(List<Game> games) {
+    return _saveGames(_customGamesKey, games);
+  }
+
+  Future<List<Game>> loadGameOverrides() => _loadGames(_gameOverridesKey);
+
+  Future<void> saveGameOverrides(List<Game> games) {
+    return _saveGames(_gameOverridesKey, games);
+  }
+
+  Future<Set<String>> loadDeletedGameIds() async {
+    final values = await _preferences.getStringList(_deletedGameIdsKey);
+    return (values ?? const <String>[]).toSet();
+  }
+
+  Future<void> saveDeletedGameIds(Set<String> ids) {
+    return _preferences.setStringList(
+      _deletedGameIdsKey,
+      ids.toList()..sort(),
+    );
+  }
+
+  Future<List<Game>> _loadGames(String key) async {
+    final raw = await _preferences.getString(key);
+    if (raw == null || raw.isEmpty) {
+      return const [];
+    }
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List<dynamic>) {
+        return const [];
+      }
+      return decoded
+          .whereType<Map<String, dynamic>>()
+          .map(Game.fromJson)
+          .where((game) => game.id.isNotEmpty && game.title.isNotEmpty)
+          .toList(growable: false);
+    } on FormatException {
+      return const [];
+    }
+  }
+
+  Future<void> _saveGames(String key, List<Game> games) {
+    final payload = jsonEncode(games.map((game) => game.toJson()).toList());
+    return _preferences.setString(key, payload);
   }
 
   Future<bool> loadCoachTourCompleted() async {

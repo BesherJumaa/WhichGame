@@ -4,7 +4,7 @@ import 'package:whichgame/core/theme/app_colors.dart';
 import 'package:whichgame/core/widgets/game_artwork.dart';
 import 'package:whichgame/domain/models/game.dart';
 
-enum GameCardAction { details, onlyThis, archive }
+enum GameCardAction { details, edit, onlyThis, archive, remove }
 
 class GameCard extends StatelessWidget {
   const GameCard({
@@ -84,6 +84,13 @@ class GameCard extends StatelessWidget {
                             ),
                           ),
                           PopupMenuItem(
+                            value: GameCardAction.edit,
+                            child: _MenuRow(
+                              icon: Icons.edit_outlined,
+                              label: AppStrings.editGame,
+                            ),
+                          ),
+                          PopupMenuItem(
                             value: GameCardAction.onlyThis,
                             child: _MenuRow(
                               icon: Icons.filter_1_rounded,
@@ -95,6 +102,14 @@ class GameCard extends StatelessWidget {
                             child: _MenuRow(
                               icon: Icons.archive_outlined,
                               label: AppStrings.archive,
+                            ),
+                          ),
+                          const PopupMenuDivider(),
+                          PopupMenuItem(
+                            value: GameCardAction.remove,
+                            child: _MenuRow(
+                              icon: Icons.delete_outline_rounded,
+                              label: AppStrings.removeGame,
                             ),
                           ),
                         ],

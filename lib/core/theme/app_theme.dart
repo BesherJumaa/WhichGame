@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:whichgame/core/theme/app_colors.dart';
 
 abstract final class AppTheme {
@@ -24,6 +25,13 @@ abstract final class AppTheme {
   }
 
   static ThemeData _base(ColorScheme scheme) {
+    final typography = Typography.material2021();
+    final materialTextTheme = scheme.brightness == Brightness.dark
+        ? typography.white
+        : typography.black;
+    final tajawalFamily = GoogleFonts.tajawal().fontFamily;
+    final textTheme = materialTextTheme.apply(fontFamily: tajawalFamily);
+
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
       borderSide: BorderSide(color: scheme.outlineVariant),
@@ -32,6 +40,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      textTheme: textTheme,
+      primaryTextTheme: textTheme,
       visualDensity: VisualDensity.standard,
       splashFactory: InkSparkle.splashFactory,
       appBarTheme: AppBarTheme(
@@ -40,11 +50,11 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.transparent,
         foregroundColor: scheme.onSurface,
-        titleTextStyle: TextStyle(
+        titleTextStyle: textTheme.titleLarge?.copyWith(
           color: scheme.onSurface,
           fontSize: 22,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.4,
+          letterSpacing: -0.2,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -62,7 +72,7 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface.withValues(alpha: 0.96),
         indicatorColor: scheme.primaryContainer,
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => TextStyle(
+          (states) => textTheme.labelLarge?.copyWith(
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w700
                 : FontWeight.w500,
@@ -77,19 +87,27 @@ abstract final class AppTheme {
       chipTheme: ChipThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         side: BorderSide(color: scheme.outlineVariant),
+        labelStyle: textTheme.labelLarge,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          textStyle: textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          textStyle: textTheme.labelLarge,
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(textStyle: textTheme.labelLarge),
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {

@@ -9,6 +9,7 @@ import 'package:whichgame/domain/models/game.dart';
 import 'package:whichgame/presentation/about/about_sheet.dart';
 import 'package:whichgame/presentation/app_scope.dart';
 import 'package:whichgame/presentation/coach/coach_tour_scope.dart';
+import 'package:whichgame/presentation/custom_picker/custom_picker_sheet.dart';
 import 'package:whichgame/presentation/generals/generals_picker_sheet.dart';
 
 class PlayScreen extends StatefulWidget {
@@ -102,6 +103,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       onOpenGenerals: controller.activePlayers.length >= 2
                           ? () => showGeneralsPicker(context)
                           : null,
+                      onOpenCustom: () => showCustomPicker(context),
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -490,11 +492,13 @@ class _QuickActions extends StatelessWidget {
     required this.onOpenGames,
     required this.onOpenTeams,
     required this.onOpenGenerals,
+    required this.onOpenCustom,
   });
 
   final VoidCallback onOpenGames;
   final VoidCallback onOpenTeams;
   final VoidCallback? onOpenGenerals;
+  final VoidCallback onOpenCustom;
 
   @override
   Widget build(BuildContext context) {
@@ -521,6 +525,14 @@ class _QuickActions extends StatelessWidget {
             icon: Icons.casino_rounded,
             label: AppStrings.openGeneralsPicker,
             onTap: onOpenGenerals,
+          ),
+        ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.auto_awesome_rounded,
+            label: AppStrings.customPickerShort,
+            onTap: onOpenCustom,
           ),
         ),
       ],

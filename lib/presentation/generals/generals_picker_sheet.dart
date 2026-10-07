@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
+import 'package:whichgame/core/widgets/app_bottom_sheet_safe_area.dart';
 import 'package:whichgame/domain/models/generals_faction.dart';
 import 'package:whichgame/domain/models/player_profile.dart';
 import 'package:whichgame/domain/services/generals_picker_service.dart';
@@ -14,7 +15,9 @@ Future<void> showGeneralsPicker(BuildContext context) {
     useSafeArea: true,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => const GeneralsPickerSheet(),
+    builder: (_) => const AppBottomSheetSafeArea(
+      child: GeneralsPickerSheet(),
+    ),
   );
 }
 

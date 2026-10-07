@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
 import 'package:whichgame/core/theme/app_colors.dart';
+import 'package:whichgame/core/widgets/app_bottom_sheet_safe_area.dart';
 import 'package:whichgame/core/widgets/app_page.dart';
 import 'package:whichgame/core/widgets/language_button.dart';
 import 'package:whichgame/domain/models/player_profile.dart';
@@ -159,7 +160,9 @@ class PlayersScreen extends StatelessWidget {
       showDragHandle: true,
       useSafeArea: true,
       isScrollControlled: true,
-      builder: (_) => _PlayerArchiveManagerSheet(initialIndex: initialIndex),
+      builder: (_) => AppBottomSheetSafeArea(
+        child: _PlayerArchiveManagerSheet(initialIndex: initialIndex),
+      ),
     );
   }
 }

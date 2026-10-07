@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:whichgame/core/constants/app_images.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
 import 'package:whichgame/core/theme/app_colors.dart';
+import 'package:whichgame/core/widgets/app_bottom_sheet_safe_area.dart';
 
 Future<void> showAboutWhichGame(
   BuildContext context, {
@@ -12,7 +13,9 @@ Future<void> showAboutWhichGame(
     showDragHandle: true,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (context) => _AboutSheet(onStartTour: onStartTour),
+    builder: (context) => AppBottomSheetSafeArea(
+      child: _AboutSheet(onStartTour: onStartTour),
+    ),
   );
 }
 
