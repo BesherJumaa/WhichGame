@@ -8,17 +8,24 @@ import 'package:whichgame/core/widgets/language_button.dart';
 import 'package:whichgame/domain/models/game.dart';
 import 'package:whichgame/presentation/about/about_sheet.dart';
 import 'package:whichgame/presentation/app_scope.dart';
+import 'package:whichgame/presentation/coach/coach_tour_scope.dart';
 import 'package:whichgame/presentation/generals/generals_picker_sheet.dart';
 
 class PlayScreen extends StatefulWidget {
   const PlayScreen({
     required this.onOpenGames,
     required this.onOpenTeams,
+    this.coachHeroKey,
+    this.coachQuickActionsKey,
+    this.coachLanguageKey,
     super.key,
   });
 
   final VoidCallback onOpenGames;
   final VoidCallback onOpenTeams;
+  final GlobalKey? coachHeroKey;
+  final GlobalKey? coachQuickActionsKey;
+  final GlobalKey? coachLanguageKey;
 
   @override
   State<PlayScreen> createState() => _PlayScreenState();
@@ -53,10 +60,13 @@ class _PlayScreenState extends State<PlayScreen> {
           AppBar(
             title: const _BrandTitle(),
             actions: [
-              const AppLanguageButton(),
+              AppLanguageButton(targetKey: widget.coachLanguageKey),
               IconButton(
                 tooltip: AppStrings.aboutTooltip,
-                onPressed: () => showAboutWhichGame(context),
+                onPressed: () => showAboutWhichGame(
+                  context,
+                  onStartTour: CoachTourScope.maybeOf(context)?.startTour,
+                ),
                 icon: const Icon(Icons.info_outline_rounded),
               ),
               const SizedBox(width: 4),
@@ -68,11 +78,14 @@ class _PlayScreenState extends State<PlayScreen> {
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
               child: ListView(
                 children: [
-                  _HeroCard(
-                    game: controller.lastPickedGame,
-                    rollVersion: _rollVersion,
-                    poolCount: controller.randomPool.length,
-                    onPick: _pickGame,
+                  KeyedSubtree(
+                    key: widget.coachHeroKey,
+                    child: _HeroCard(
+                      game: controller.lastPickedGame,
+                      rollVersion: _rollVersion,
+                      poolCount: controller.randomPool.length,
+                      onPick: _pickGame,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _StatsRow(
@@ -81,12 +94,15 @@ class _PlayScreenState extends State<PlayScreen> {
                     players: controller.activePlayers.length,
                   ),
                   const SizedBox(height: 12),
-                  _QuickActions(
-                    onOpenGames: widget.onOpenGames,
-                    onOpenTeams: widget.onOpenTeams,
-                    onOpenGenerals: controller.activePlayers.length >= 2
-                        ? () => showGeneralsPicker(context)
-                        : null,
+                  KeyedSubtree(
+                    key: widget.coachQuickActionsKey,
+                    child: _QuickActions(
+                      onOpenGames: widget.onOpenGames,
+                      onOpenTeams: widget.onOpenTeams,
+                      onOpenGenerals: controller.activePlayers.length >= 2
+                          ? () => showGeneralsPicker(context)
+                          : null,
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Row(

@@ -3,18 +3,23 @@ import 'package:whichgame/core/constants/app_images.dart';
 import 'package:whichgame/core/constants/app_strings.dart';
 import 'package:whichgame/core/theme/app_colors.dart';
 
-Future<void> showAboutWhichGame(BuildContext context) {
+Future<void> showAboutWhichGame(
+  BuildContext context, {
+  VoidCallback? onStartTour,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (context) => const _AboutSheet(),
+    builder: (context) => _AboutSheet(onStartTour: onStartTour),
   );
 }
 
 class _AboutSheet extends StatelessWidget {
-  const _AboutSheet();
+  const _AboutSheet({required this.onStartTour});
+
+  final VoidCallback? onStartTour;
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +63,12 @@ class _AboutSheet extends StatelessWidget {
                   children: [
                     Text(
                       AppStrings.appName,
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     Text(AppStrings.appTagline),
                   ],
                 ),
@@ -76,12 +84,15 @@ class _AboutSheet extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.code_rounded, color: AppColors.accent),
-                SizedBox(width: 12),
+                const Icon(Icons.code_rounded, color: AppColors.accent),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     AppStrings.developedBy,
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ],
@@ -92,6 +103,23 @@ class _AboutSheet extends StatelessWidget {
             AppStrings.aboutDescription,
             style: TextStyle(color: scheme.onSurfaceVariant, height: 1.45),
           ),
+          if (onStartTour != null) ...[
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Future<void>.delayed(
+                    const Duration(milliseconds: 240),
+                    () => onStartTour?.call(),
+                  );
+                },
+                icon: const Icon(Icons.auto_awesome_rounded),
+                label: Text(AppStrings.startAppTour),
+              ),
+            ),
+          ],
         ],
       ),
     );

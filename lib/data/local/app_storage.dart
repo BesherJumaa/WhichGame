@@ -17,6 +17,7 @@ class AppStorage {
   static const _archivedGamesKey = 'whichgame.archivedGames.v1';
   static const _archivedPlayersKey = 'whichgame.archivedPlayers.v1';
   static const _languageKey = 'whichgame.language.v1';
+  static const _coachTourCompletedKey = 'whichgame.coachTour.completed.v1';
 
   final SharedPreferencesAsync _preferences;
 
@@ -119,5 +120,13 @@ class AppStorage {
 
   Future<void> saveLanguage(AppLanguage language) {
     return _preferences.setString(_languageKey, language.code);
+  }
+
+  Future<bool> loadCoachTourCompleted() async {
+    return await _preferences.getBool(_coachTourCompletedKey) ?? false;
+  }
+
+  Future<void> saveCoachTourCompleted(bool completed) {
+    return _preferences.setBool(_coachTourCompletedKey, completed);
   }
 }

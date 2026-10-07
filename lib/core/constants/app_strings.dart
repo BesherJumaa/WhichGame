@@ -34,6 +34,75 @@ abstract final class AppStrings {
   static String get english => _t('English', 'الإنجليزية');
   static String get arabic => _t('Arabic', 'العربية');
 
+  static String get appTour => _t('App tour', 'جولة التطبيق');
+  static String get startAppTour => _t('Show app tour', 'عرض جولة التطبيق');
+  static String get next => _t('Next', 'التالي');
+  static String get back => _t('Back', 'السابق');
+  static String get skip => _t('Skip', 'تخطي');
+  static String get done => _t('Done', 'تم');
+  static String coachStep(int current, int total) => '$current/$total';
+
+  static String get coachWelcomeTitle => _t('Welcome to Which Game?', 'أهلاً بك في أي لعبة؟');
+  static String get coachWelcomeDescription => _t(
+        'A quick tour will show you the random picker, your personal game board, saved players, team tools, Generals armies, archives, and language controls.',
+        'جولة سريعة ستعرّفك على الاختيار العشوائي، لوحة ألعابك، اللاعبين المحفوظين، تقسيم الفرق، جيوش جنرالز، الأرشيف، وتغيير اللغة.',
+      );
+  static String get coachPlayTitle => _t('Pick a game instantly', 'اختر لعبة فوراً');
+  static String get coachPlayDescription => _t(
+        'This fixed result card chooses only from enabled, non-archived games that match your saved filters. Tap Pick again whenever you want another result.',
+        'هذه البطاقة تختار فقط من الألعاب المفعّلة وغير المؤرشفة والمطابقة للفلاتر المحفوظة. اضغط اختر مجدداً للحصول على نتيجة جديدة.',
+      );
+  static String get coachQuickActionsTitle => _t('Your fastest shortcuts', 'أسرع اختصاراتك');
+  static String get coachQuickActionsDescription => _t(
+        'Jump straight to managing games, splitting teams, or assigning Generals armies to all active players.',
+        'انتقل مباشرة لإدارة الألعاب أو تقسيم الفرق أو توزيع جيوش جنرالز على جميع اللاعبين النشطين.',
+      );
+  static String get coachGameFiltersTitle => _t('Keep the library compact', 'حافظ على المكتبة مرتبة');
+  static String get coachGameFiltersDescription => _t(
+        'Search and filter by category, play style, and random-pool status. Clear filters anytime to see your whole board again.',
+        'ابحث وفلتر حسب التصنيف ونمط اللعب وحالة العشوائي. يمكنك مسح الفلاتر في أي وقت لرؤية كامل لوحتك.',
+      );
+  static String get coachGameBoardTitle => _t('Enable only what you play', 'فعّل ما تلعبه فقط');
+  static String get coachGameBoardDescription => _t(
+        'Tap a game to enable or disable it. The menu also gives you details and “Only this game” when you want one instant choice.',
+        'اضغط على اللعبة لتفعيلها أو تعطيلها. ومن القائمة يمكنك مشاهدة التفاصيل أو اختيار «هذه اللعبة فقط» لتعطيل البقية بسرعة.',
+      );
+  static String get coachGameArchiveTitle => _t('Archive the rest', 'أرشف الباقي');
+  static String get coachGameArchiveDescription => _t(
+        'Archive games you do not currently use. They disappear from the board and random picker, and you can restore many of them together later.',
+        'أرشف الألعاب التي لا تستخدمها حالياً. ستختفي من اللوحة والاختيار العشوائي ويمكنك استعادة عدة ألعاب معاً لاحقاً.',
+      );
+  static String get coachPlayersTitle => _t('Build your player roster', 'كوّن قائمة اللاعبين');
+  static String get coachPlayersDescription => _t(
+        'Permanent players stay cached on this device. Guests last only for the current session. Check the players who are playing today.',
+        'اللاعبون الدائمون يبقون محفوظين على الجهاز، أما الضيوف فللجلسة الحالية فقط. فعّل اللاعبين الموجودين اليوم.',
+      );
+  static String get coachPlayerArchiveTitle => _t('Keep old players without clutter', 'احتفظ باللاعبين بدون ازدحام');
+  static String get coachPlayerArchiveDescription => _t(
+        'Use the archive manager to archive or restore several saved players at once instead of deleting them.',
+        'استخدم مدير الأرشيف لأرشفة أو استعادة عدة لاعبين محفوظين دفعة واحدة بدلاً من حذفهم.',
+      );
+  static String get coachTeamsTitle => _t('Split active players into teams', 'قسّم اللاعبين النشطين إلى فرق');
+  static String get coachTeamsDescription => _t(
+        'Choose the number of teams and shuffle. Only players checked in the Players tab are included.',
+        'اختر عدد الفرق ثم اخلط اللاعبين. لن يدخل إلا اللاعبون المفعّلون في تبويب اللاعبين.',
+      );
+  static String get coachGeneralsTitle => _t('Generals army picker', 'اختيار جيوش جنرالز');
+  static String get coachGeneralsDescription => _t(
+        'With two or more active players, assign a Zero Hour army to everyone at once with a short animated reveal.',
+        'عند وجود لاعبين نشطين أو أكثر، وزّع جيش Zero Hour على الجميع دفعة واحدة مع حركة قصيرة قبل ظهور النتائج.',
+      );
+  static String get coachLanguageTitle => _t('Switch language instantly', 'بدّل اللغة فوراً');
+  static String get coachLanguageDescription => _t(
+        'Tap the globe anytime to switch between English and Arabic. The whole interface updates immediately.',
+        'اضغط زر الكرة الأرضية في أي وقت للتبديل بين العربية والإنجليزية، وستتحدث الواجهة كاملة فوراً.',
+      );
+  static String get coachNavigationTitle => _t('Four simple spaces', 'أربعة أقسام واضحة');
+  static String get coachNavigationDescription => _t(
+        'Play picks the game, Games manages your board, Players manages today’s roster, and Teams handles team generation. You can replay this tour from About.',
+        'اللعب للاختيار العشوائي، الألعاب لإدارة اللوحة، اللاعبون لقائمة اليوم، والفرق للتقسيم. يمكنك إعادة هذه الجولة من صفحة حول التطبيق.',
+      );
+
   static String get gameLibrary => _t('Game library', 'مكتبة الألعاب');
   static String get clear => _t('Clear', 'مسح');
   static String get clearFilters => _t('Clear filters', 'مسح الفلاتر');

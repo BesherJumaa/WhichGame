@@ -49,6 +49,7 @@ class AppController extends ChangeNotifier {
   GameFilterState _gameFilters = const GameFilterState();
   Game? _lastPickedGame;
   AppLanguage _language = AppLanguage.english;
+  bool _coachTourCompleted = false;
 
   List<PlayerProfile> get permanentPlayers => List.unmodifiable(
         _permanentPlayers
@@ -75,6 +76,7 @@ class AppController extends ChangeNotifier {
   GameFilterState get gameFilters => _gameFilters;
   Game? get lastPickedGame => _lastPickedGame;
   AppLanguage get language => _language;
+  bool get shouldShowCoachTour => !_coachTourCompleted;
 
   List<PlayerProfile> get activePlayers => allPlayers
       .where((player) => _activePlayerIds.contains(player.id))
@@ -110,6 +112,7 @@ class AppController extends ChangeNotifier {
 
   Future<void> initialize() async {
     _language = await _storage.loadLanguage();
+    _coachTourCompleted = await _storage.loadCoachTourCompleted();
     AppStrings.setLanguage(_language);
     games = GameCatalog.buildGames();
 
@@ -186,6 +189,14 @@ class AppController extends ChangeNotifier {
         _storage.saveSelectedGameIds(_selectedGameIds),
       ]);
     }
+  }
+
+  Future<void> completeCoachTour() async {
+    if (_coachTourCompleted) {
+      return;
+    }
+    _coachTourCompleted = true;
+    await _storage.saveCoachTourCompleted(true);
   }
 
   Future<void> setLanguage(AppLanguage language) async {

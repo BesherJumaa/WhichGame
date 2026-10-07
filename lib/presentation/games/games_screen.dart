@@ -10,7 +10,16 @@ import 'package:whichgame/presentation/app_scope.dart';
 import 'package:whichgame/presentation/games/widgets/game_card.dart';
 
 class GamesScreen extends StatefulWidget {
-  const GamesScreen({super.key});
+  const GamesScreen({
+    this.coachFiltersKey,
+    this.coachBoardKey,
+    this.coachArchiveKey,
+    super.key,
+  });
+
+  final GlobalKey? coachFiltersKey;
+  final GlobalKey? coachBoardKey;
+  final GlobalKey? coachArchiveKey;
 
   @override
   State<GamesScreen> createState() => _GamesScreenState();
@@ -41,6 +50,7 @@ class _GamesScreenState extends State<GamesScreen> {
             title: Text(AppStrings.gameLibrary),
             actions: [
               IconButton(
+                key: widget.coachArchiveKey,
                 tooltip: AppStrings.manageGameBoard,
                 onPressed: () => _showArchivedGames(context),
                 icon: controller.archivedGamesCount == 0
@@ -66,13 +76,16 @@ class _GamesScreenState extends State<GamesScreen> {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
               child: Column(
                 children: [
-                  _SearchAndFilterRow(
-                    searchController: _searchController,
-                    onSearchChanged: () => setState(() {}),
-                    filters: controller.gameFilters,
-                    onCategoryChanged: controller.setCategoryFilter,
-                    onModeChanged: controller.setModeFilter,
-                    onPoolChanged: controller.setPoolFilter,
+                  KeyedSubtree(
+                    key: widget.coachFiltersKey,
+                    child: _SearchAndFilterRow(
+                      searchController: _searchController,
+                      onSearchChanged: () => setState(() {}),
+                      filters: controller.gameFilters,
+                      onCategoryChanged: controller.setCategoryFilter,
+                      onModeChanged: controller.setModeFilter,
+                      onPoolChanged: controller.setPoolFilter,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   SizedBox(
@@ -142,29 +155,32 @@ class _GamesScreenState extends State<GamesScreen> {
                     ),
                   ),
                   Expanded(
-                    child: games.isEmpty
-                        ? _EmptyGames(onClear: () => _clearAll(controller))
-                        : LayoutBuilder(
-                            builder: (context, constraints) {
-                              final columns = switch (constraints.maxWidth) {
-                                < 330 => 3,
-                                < 620 => 4,
-                                < 820 => 5,
-                                < 1040 => 6,
-                                _ => 7,
-                              };
+                    child: KeyedSubtree(
+                      key: widget.coachBoardKey,
+                      child: games.isEmpty
+                          ? _EmptyGames(onClear: () => _clearAll(controller))
+                          : LayoutBuilder(
+                              builder: (context, constraints) {
+                                final columns = switch (constraints.maxWidth) {
+                                  < 330 => 3,
+                                  < 620 => 4,
+                                  < 820 => 5,
+                                  < 1040 => 6,
+                                  _ => 7,
+                                };
 
-                              return CustomScrollView(
-                                keyboardDismissBehavior:
-                                    ScrollViewKeyboardDismissBehavior.onDrag,
-                                slivers: _buildGameSlivers(
-                                  context: context,
-                                  games: games,
-                                  columns: columns,
-                                ),
-                              );
-                            },
-                          ),
+                                return CustomScrollView(
+                                  keyboardDismissBehavior:
+                                      ScrollViewKeyboardDismissBehavior.onDrag,
+                                  slivers: _buildGameSlivers(
+                                    context: context,
+                                    games: games,
+                                    columns: columns,
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
                   ),
                 ],
               ),

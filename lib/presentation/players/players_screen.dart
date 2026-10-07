@@ -8,7 +8,14 @@ import 'package:whichgame/presentation/app_scope.dart';
 import 'package:whichgame/presentation/players/widgets/player_editor_sheet.dart';
 
 class PlayersScreen extends StatelessWidget {
-  const PlayersScreen({super.key});
+  const PlayersScreen({
+    this.coachRosterKey,
+    this.coachArchiveKey,
+    super.key,
+  });
+
+  final GlobalKey? coachRosterKey;
+  final GlobalKey? coachArchiveKey;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +30,7 @@ class PlayersScreen extends StatelessWidget {
             title: Text(AppStrings.players),
             actions: [
               IconButton(
+                key: coachArchiveKey,
                 tooltip: AppStrings.managePlayerArchive,
                 onPressed: () => _showPlayerArchiveManager(context),
                 icon: controller.archivedPlayersCount == 0
@@ -76,10 +84,13 @@ class PlayersScreen extends StatelessWidget {
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
-                  _PlayerSummary(
-                    active: controller.activePlayers.length,
-                    permanent: permanent.length,
-                    guests: guests.length,
+                  KeyedSubtree(
+                    key: coachRosterKey,
+                    child: _PlayerSummary(
+                      active: controller.activePlayers.length,
+                      permanent: permanent.length,
+                      guests: guests.length,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   _SectionTitle(

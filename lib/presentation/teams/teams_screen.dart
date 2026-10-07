@@ -9,7 +9,14 @@ import 'package:whichgame/presentation/app_scope.dart';
 import 'package:whichgame/presentation/generals/generals_picker_sheet.dart';
 
 class TeamsScreen extends StatefulWidget {
-  const TeamsScreen({super.key});
+  const TeamsScreen({
+    this.coachBuilderKey,
+    this.coachGeneralsKey,
+    super.key,
+  });
+
+  final GlobalKey? coachBuilderKey;
+  final GlobalKey? coachGeneralsKey;
 
   @override
   State<TeamsScreen> createState() => _TeamsScreenState();
@@ -70,9 +77,11 @@ class _TeamsScreenState extends State<TeamsScreen> {
             child: AppPage(
               child: ListView(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
+                  KeyedSubtree(
+                    key: widget.coachBuilderKey,
+                    child: Container(
+                      padding: const EdgeInsets.all(22),
+                      decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(28),
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
@@ -160,18 +169,22 @@ class _TeamsScreenState extends State<TeamsScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: players.length >= 2
-                                ? () => showGeneralsPicker(context)
-                                : null,
-                            icon: const Icon(Icons.casino_rounded),
-                            label: Text(AppStrings.openGeneralsPicker),
+                        KeyedSubtree(
+                          key: widget.coachGeneralsKey,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: players.length >= 2
+                                  ? () => showGeneralsPicker(context)
+                                  : null,
+                              icon: const Icon(Icons.casino_rounded),
+                              label: Text(AppStrings.openGeneralsPicker),
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  ),
                   ),
                   const SizedBox(height: 20),
                   if (players.length < 2)
