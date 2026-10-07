@@ -1,0 +1,51 @@
+# Game artwork sources
+
+All app game artwork is stored locally as WebP. Steam-backed titles use Steam store header artwork. Older/mod/community/card titles use the listed web source.
+
+- `a_way_out.webp` — Steam store header (App 1222700) — https://store.steampowered.com/app/1222700
+- `among_us.webp` — Steam store header (App 945360) — https://store.steampowered.com/app/945360
+- `back_4_blood.webp` — Steam store header (App 924970) — https://store.steampowered.com/app/924970
+- `battlefield_2.webp` — Web/official or archival game artwork — https://images.launchbox-app.com/d0a92a2c-abd2-4ea8-abfe-941d62fee94e.jpg
+- `battlefield_3.webp` — Steam store header (App 1238820) — https://store.steampowered.com/app/1238820
+- `battlefield_6.webp` — Official EA Battlefield 6 Standard Edition artwork — https://www.ea.com/games/battlefield/battlefield-6/buy
+- `battlefield_bad_company_2.webp` — Steam store header (App 24960) — https://store.steampowered.com/app/24960
+- `blood_strike.webp` — Steam store header (App 3199170) — https://store.steampowered.com/app/3199170
+- `borderlands_2.webp` — Steam store header (App 49520) — https://store.steampowered.com/app/49520
+- `buckshot_roulette.webp` — Steam store header (App 2835570) — https://store.steampowered.com/app/2835570
+- `chained_together.webp` — Steam store header (App 2567870) — https://store.steampowered.com/app/2567870
+- `counter_strike_1_6.webp` — Steam store header (App 10) — https://store.steampowered.com/app/10
+- `counter_strike_source.webp` — Steam store header (App 240) — https://store.steampowered.com/app/240
+- `ember_knights.webp` — Steam store header (App 1135230) — https://store.steampowered.com/app/1135230
+- `far_cry_2.webp` — Steam store header (App 19900) — https://store.steampowered.com/app/19900
+- `generals_shockwave.webp` — Web/official or archival game artwork — https://ph-live-05.slatic.net/p/1e1ecac239667997fdf84a29e2628519.png
+- `generals_zero_hour.webp` — Steam store header (App 2732960) — https://store.steampowered.com/app/2732960
+- `gta_v.webp` — Steam store header (App 271590) — https://store.steampowered.com/app/271590
+- `it_takes_two.webp` — Steam store header (App 1426210) — https://store.steampowered.com/app/1426210
+- `left_4_dead_2.webp` — Steam store header (App 550) — https://store.steampowered.com/app/550
+- `lockdown_protocol.webp` — Steam store header (App 2780980) — https://store.steampowered.com/app/2780980
+- `mortal_kombat_11.webp` — Steam store header (App 976310) — https://store.steampowered.com/app/976310
+- `naruto_ninja_world_battle_2.webp` — Web/official or archival game artwork — https://squarefaction.ru/files/game/1176/cover/naruto-clash-of-ninja-2_568af468.jpg
+- `naruto_storm_4.webp` — Steam store header (App 349040) — https://store.steampowered.com/app/349040
+- `naruto_ultimate_ninja_2.webp` — Web/official or archival game artwork — https://cdn.mobygames.com/covers/6307186-naruto-ultimate-ninja-2-playstation-2-front-cover.jpg
+- `nfs_carbon.webp` — Web/official or archival game artwork — https://retromagaz.com/uploads/products/46/5b/site_f499m3651_1f271df5.png
+- `nfs_most_wanted.webp` — Web/official or archival game artwork — https://www.instacart.com/image-server/1200x1200/www.instacart.com/assets/domains/product-image/file/large_d92a6db4-7c00-4350-8367-de20d1d03e82.jpeg
+- `pes_2010.webp` — Web/official or archival game artwork — https://m.media-amazon.com/images/M/MV5BY2E3NGE4ODYtZmVlOC00ZWQ0LThiMTgtMzRiOTJiNTBhNmIzXkEyXkFqcGc%40._V1_FMjpg_UX1000_.jpg
+- `pes_2016.webp` — Steam store header (App 375960) — https://store.steampowered.com/app/375960
+- `pes_2019.webp` — Steam store header (App 770240) — https://store.steampowered.com/app/770240
+- `pes_2021.webp` — Steam store header (App 1259970) — https://store.steampowered.com/app/1259970
+- `road_redemption.webp` — Steam store header (App 300380) — https://store.steampowered.com/app/300380
+- `samurai_warriors_5.webp` — Steam store header (App 1591530) — https://store.steampowered.com/app/1591530
+- `sons_of_the_forest.webp` — Steam store header (App 1326470) — https://store.steampowered.com/app/1326470
+- `tarneeb.webp` — Web/official or archival game artwork — https://dl.memuplay.com/new_market/img/com.maysalward.Tarneeb.icon.2025-07-15-22-01-31.png
+- `tarneeb_41.webp` — Web/official or archival game artwork — https://dl.memuplay.com/new_market/img/com.dreamgames.tarneeb41.icon.2024-12-30-01-34-22.png
+- `tmnt_battle_nexus_2.webp` — Web/official or archival game artwork — https://down-br.img.susercontent.com/file/br-11134207-7qukw-lj3jvmsus78w6d
+- `tmnt_mutant_nightmare_3.webp` — Web/official or archival game artwork — https://s.pacn.ws/1/p/cy/pa.233161.1.jpg?v=m6x7p7
+- `trix.webp` — Trix app artwork — https://dl.memuplay.com/new_market/img/com.spapps.trix.icon.2024-12-18-19-44-45.png
+- `twisted_metal_2.webp` — Web/official or archival game artwork — https://miro.medium.com/0%2Ate2v-0Z9xcHsrbe4.jpg
+- `uno.webp` — Steam store header (App 470220) — https://store.steampowered.com/app/470220
+- `valorant.webp` — Web/official or archival game artwork — https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/d0db663bf28844dcbd744935cdd8c71083e0031c-5600x3150.jpg
+- `warcraft_3_frozen_throne.webp` — Web/official or archival game artwork — https://i.playground.ru/p/QCR-RzJAMmuwysTwt-NvnA.jpeg
+- `worms_ultimate_mayhem.webp` — Steam store header (App 70600) — https://store.steampowered.com/app/70600
+
+- `coup.webp` — Coup physical game artwork — https://www.gamesworld.com.au/wp-content/uploads/2023/01/coup1.jpg
+- `istimar.webp` — Jawaker Estimar/Tarneeb rules artwork — https://blog.jawaker.com/estimar-rules/Tarneeb-Estimar-Blog-banner-A.png

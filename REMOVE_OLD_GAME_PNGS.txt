@@ -1,0 +1,6 @@
+After copying this update into the project root, remove the old game PNG assets so they are not bundled alongside the new WebP files:
+
+PowerShell:
+Remove-Item .\images\games\*.png -ErrorAction SilentlyContinue
+
+The Dart code in this patch references only the new .webp files.
